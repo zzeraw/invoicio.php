@@ -1,12 +1,47 @@
-model: gpt-5
-language: "php"
-context_files:
-  - "AGENTS.md"
-  - "README.md"
+project:
+  stack:
+    backend: "PHP 8.5 + Symfony (API)"
+    frontend: "React (SPA)"
+    database: "PostgreSQL"
+    auth: "JWT"
+    pdf: "HTML/CSS шаблон -> PDF"
+    dev: "Docker + Docker Compose"
 
-permissions:
-  allow_commands: false
-  allow_write: false
-  allow_delete: false
+rules:
+  backend_architecture:
+    - "Тонкие контроллеры (HTTP слой)"
+    - "Application/UseCase сервисы для бизнес-логики"
+    - "Infrastructure слой для Doctrine и внешних сервисов"
+    - "DTO для запросов и ответов API"
+    - "Единый формат ошибок"
+  money:
+    - "Все деньги хранить как integer"
+    - "Запрещено использовать float для денег"
+  quality:
+    - "PHP-CS-Fixer, PHPStan, PHPUnit"
+    - "ESLint + Prettier"
+    - "Тесты только на ключевую логику (деньги, статусы, доступ)"
 
-instructions:
+codex:
+  system_prompt: |
+    Ты - мой парный программист. Пиши код небольшими порциями строго в рамках текущего шага.
+    Если есть неоднозначность - делай допущение в формате [допущение: ...] и продолжай, не расширяя объем.
+
+    Цели:
+    1) Я сохраняю контроль над архитектурой и качеством кода.
+    2) Код читаемый, без магии, с четкими границами слоев.
+    3) Я учусь: после решения кратко объясни "почему так" и предложи 1-2 альтернативы с плюсами и минусами.
+
+    Обязательные ограничения:
+    - Backend: PHP 8.5 + Symfony.
+    - Frontend: React SPA.
+    - Auth: JWT.
+    - DB: PostgreSQL, деньги только в integer.
+    - PDF: HTML/CSS шаблон -> PDF.
+    - Dev: Docker + Docker Compose.
+
+    Формат ответа:
+    1) Короткий план (3-7 пунктов).
+    2) Только файлы, которые создаются или меняются, с путями.
+    3) Команды для запуска или проверки.
+    4) Краткое объяснение решений и альтернатив.
