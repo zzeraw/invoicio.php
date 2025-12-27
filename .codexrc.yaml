@@ -1,0 +1,12 @@
+model: gpt-5
+language: "php"
+context_files:
+  - "AGENTS.md"
+  - "README.md"
+
+permissions:
+  allow_commands: false
+  allow_write: false
+  allow_delete: false
+
+instructions:
