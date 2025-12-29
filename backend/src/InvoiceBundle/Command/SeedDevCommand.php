@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Command;
+namespace App\InvoiceBundle\Command;
 
-use App\Entity\Client;
-use App\Entity\ClientAccount;
-use App\Entity\Invoice;
-use App\Entity\InvoiceItem;
-use App\Entity\Service;
-use App\Entity\User;
+use App\InvoiceBundle\Entity\Client;
+use App\InvoiceBundle\Entity\ClientAccount;
+use App\InvoiceBundle\Entity\Invoice;
+use App\InvoiceBundle\Entity\InvoiceItem;
+use App\InvoiceBundle\Entity\Service;
+use App\UserBundle\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\InvoiceBundle\Entity;
 
-use App\Entity\Traits\TimestampsTrait;
+use App\Shared\Entity\Traits\TimestampsTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]

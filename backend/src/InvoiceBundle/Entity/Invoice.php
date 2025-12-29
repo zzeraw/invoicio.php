@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\InvoiceBundle\Entity;
 
-use App\Entity\Traits\SoftDeleteTrait;
-use App\Entity\Traits\TimestampsTrait;
+use App\Shared\Entity\Traits\SoftDeleteTrait;
+use App\Shared\Entity\Traits\TimestampsTrait;
+use App\UserBundle\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

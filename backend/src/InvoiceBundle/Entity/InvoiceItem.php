@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\InvoiceBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
