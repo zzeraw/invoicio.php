@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../vendor/nelmio/api-doc-bundle/Resources/config/schema/nelmio_api_doc_bundle.schema.json
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Invoicio API
+            version: 0.1.0
+    areas:
+        default:
+            path_patterns:
+                - ^/api
