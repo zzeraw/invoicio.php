@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=../../vendor/doctrine/doctrine-migrations-bundle/Resources/config/schema/doctrine-migrations-1.0.xsd
+doctrine_migrations:
+    migrations_paths:
+        'DoctrineMigrations': '%kernel.project_dir%/migrations'
+    storage:
+        table_storage:
+            table_name: doctrine_migration_versions
