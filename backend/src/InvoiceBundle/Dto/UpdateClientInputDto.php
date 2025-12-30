@@ -2,7 +2,9 @@
 
 namespace App\InvoiceBundle\Dto;
 
-final readonly class UpdateClientInputDto
+use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
+
+final readonly class UpdateClientInputDto implements UpdateClientInputDtoInterface
 {
     /**
      * @param array<string, mixed>|null $legalDetails
@@ -58,8 +60,11 @@ final readonly class UpdateClientInputDto
         return $this->legalDetails;
     }
 
-    public function hasField(string $name): bool
+    /**
+     * @return array<string, bool>
+     */
+    public function getFields(): array
     {
-        return true === ($this->fields[$name] ?? false);
+        return $this->fields;
     }
 }

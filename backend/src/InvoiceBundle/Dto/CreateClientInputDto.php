@@ -2,7 +2,9 @@
 
 namespace App\InvoiceBundle\Dto;
 
-final readonly class CreateClientInputDto
+use App\InvoiceBundle\PublicInterface/CreateClientInputDtoInterface;
+
+final readonly class CreateClientInputDto implements CreateClientInputDtoInterface
 {
     /**
      * @param array<string, mixed>|null $legalDetails

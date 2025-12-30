@@ -3,10 +3,9 @@
 namespace App\AppBundle\Controller;
 
 use App\AppBundle\Security\CurrentUserResolver;
-use App\InvoiceBundle\Dto\ClientDto;
-use App\InvoiceBundle\Dto\CreateClientInputDto;
-use App\InvoiceBundle\Dto\UpdateClientInputDto;
-use App\InvoiceBundle\Service\ClientManageService;
+use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
+use App\InvoiceBundle\PublicService\ClientDtoFactoryInterface;
+use App\InvoiceBundle\PublicService\ClientManageServiceInterface;
 use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +17,8 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ClientController
 {
     public function __construct(
-        private readonly ClientManageService $clientManageService,
+        private readonly ClientManageServiceInterface $clientManageService,
+        private readonly ClientDtoFactoryInterface $clientDtoFactory,
         private readonly CurrentUserResolver $currentUserResolver
     ) {
     }
@@ -92,7 +92,7 @@ final class ClientController
                 return new JsonResponse(['message' => 'Name is required.'], Response::HTTP_BAD_REQUEST);
             }
 
-            $input = new CreateClientInputDto(
+            $input = $this->clientDtoFactory->createCreateInput(
                 $name,
                 $this->getOptionalString($data, 'legal_address'),
                 $this->getOptionalString($data, 'country_code'),
@@ -101,7 +101,7 @@ final class ClientController
                 $this->getOptionalString($data, 'registration_number'),
                 $this->getOptionalArray($data, 'legal_details')
             );
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
@@ -130,7 +130,7 @@ final class ClientController
         try {
             $data = $this->getPayload($request);
 
-            $input = new UpdateClientInputDto(
+            $input = $this->clientDtoFactory->createUpdateInput(
                 $this->getOptionalString($data, 'name'),
                 $this->getOptionalString($data, 'legal_address'),
                 $this->getOptionalString($data, 'country_code'),
@@ -140,14 +140,14 @@ final class ClientController
                 $this->getOptionalArray($data, 'legal_details'),
                 $this->getFieldFlags($data)
             );
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
         $userId = $this->currentUserResolver->getUserId();
         try {
             $client = $this->clientManageService->updateForUser($userId, $id, $input);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
@@ -187,7 +187,7 @@ final class ClientController
     /**
      * @return array<string, mixed>
      */
-    private function normalizeClient(ClientDto $client): array
+    private function normalizeClient(ClientDtoInterface $client): array
     {
         return [
             'id' => $client->getId(),

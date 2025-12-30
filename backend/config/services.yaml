@@ -23,3 +23,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+
+    App\InvoiceBundle\PublicService\ClientManageServiceInterface: '@App\InvoiceBundle\Service\ClientManageService'
+    App\InvoiceBundle\PublicService\ClientDtoFactoryInterface: '@App\InvoiceBundle\Service\ClientDtoFactory'
+    App\UserBundle\PublicService\UserIdProviderInterface: '@App\UserBundle\Service\UserIdProvider'

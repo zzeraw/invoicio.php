@@ -14,3 +14,11 @@ services:
         class: App\PhpStan\Rules\NoPublicMethodReturnsEntityRule
         tags:
             - phpstan.rules.rule
+    -
+        class: App\PhpStan\Rules\DtoMethodsRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PhpStan\Rules\NoCrossBundleAccessRule
+        tags:
+            - phpstan.rules.rule

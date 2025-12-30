@@ -28,7 +28,7 @@ final readonly class ApiTokenDto
         return $this->label;
     }
 
-    public function isActive(): bool
+    public function getIsActive(): bool
     {
         return $this->isActive;
     }

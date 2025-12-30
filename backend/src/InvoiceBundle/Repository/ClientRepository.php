@@ -3,9 +3,10 @@
 namespace App\InvoiceBundle\Repository;
 
 use App\InvoiceBundle\Dto\ClientDto;
-use App\InvoiceBundle\Dto\CreateClientInputDto;
-use App\InvoiceBundle\Dto\UpdateClientInputDto;
 use App\InvoiceBundle\Entity\Client;
+use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
+use App\InvoiceBundle\PublicInterface\CreateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use LogicException;
@@ -18,7 +19,7 @@ final readonly class ClientRepository
     }
 
     /**
-     * @return array<int, ClientDto>
+     * @return array<int, ClientDtoInterface>
      */
     public function listForUser(int $userId): array
     {
@@ -39,7 +40,7 @@ final readonly class ClientRepository
         return $result;
     }
 
-    public function getForUser(int $userId, int $clientId): ?ClientDto
+    public function getForUser(int $userId, int $clientId): ?ClientDtoInterface
     {
         $repository = $this->entityManager->getRepository(Client::class);
         $client = $repository->findOneBy(
@@ -53,7 +54,7 @@ final readonly class ClientRepository
         return $this->convertEntityToDto($client);
     }
 
-    public function createForUser(int $userId, CreateClientInputDto $input): ClientDto
+    public function createForUser(int $userId, CreateClientInputDtoInterface $input): ClientDtoInterface
     {
         $client = new Client();
         $client->setUserId($userId);
@@ -71,8 +72,11 @@ final readonly class ClientRepository
         return $this->convertEntityToDto($client);
     }
 
-    public function updateForUser(int $userId, int $clientId, UpdateClientInputDto $input): ?ClientDto
-    {
+    public function updateForUser(
+        int $userId,
+        int $clientId,
+        UpdateClientInputDtoInterface $input
+    ): ?ClientDtoInterface {
         $repository = $this->entityManager->getRepository(Client::class);
         $client = $repository->findOneBy(
             ['id' => $clientId, 'userId' => $userId, 'deletedAt' => null]
@@ -82,7 +86,7 @@ final readonly class ClientRepository
             return null;
         }
 
-        if ($input->hasField('name')) {
+        if ($this->hasField($input->getFields(), 'name')) {
             $name = $input->getName();
             if (null === $name || '' === $name) {
                 throw new InvalidArgumentException('Name is required.');
@@ -90,27 +94,27 @@ final readonly class ClientRepository
             $client->setName($name);
         }
 
-        if ($input->hasField('legalAddress')) {
+        if ($this->hasField($input->getFields(), 'legalAddress')) {
             $client->setLegalAddress($input->getLegalAddress());
         }
 
-        if ($input->hasField('countryCode')) {
+        if ($this->hasField($input->getFields(), 'countryCode')) {
             $client->setCountryCode($input->getCountryCode());
         }
 
-        if ($input->hasField('taxId')) {
+        if ($this->hasField($input->getFields(), 'taxId')) {
             $client->setTaxId($input->getTaxId());
         }
 
-        if ($input->hasField('taxKpp')) {
+        if ($this->hasField($input->getFields(), 'taxKpp')) {
             $client->setTaxKpp($input->getTaxKpp());
         }
 
-        if ($input->hasField('registrationNumber')) {
+        if ($this->hasField($input->getFields(), 'registrationNumber')) {
             $client->setRegistrationNumber($input->getRegistrationNumber());
         }
 
-        if ($input->hasField('legalDetails')) {
+        if ($this->hasField($input->getFields(), 'legalDetails')) {
             $client->setLegalDetails($input->getLegalDetails());
         }
 
@@ -136,7 +140,15 @@ final readonly class ClientRepository
         return true;
     }
 
-    private function convertEntityToDto(Client $entity): ClientDto
+    /**
+     * @param array<string, bool> $fields
+     */
+    private function hasField(array $fields, string $name): bool
+    {
+        return true === ($fields[$name] ?? false);
+    }
+
+    private function convertEntityToDto(Client $entity): ClientDtoInterface
     {
         $id = $entity->getId();
         if (null === $id) {

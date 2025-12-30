@@ -2,7 +2,7 @@
 
 namespace App\AppBundle\Security;
 
-use App\UserBundle\Repository\UserRepository;
+use App\UserBundle\PublicService\UserIdProviderInterface;
 use LogicException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,7 +11,7 @@ final readonly class CurrentUserResolver
 {
     public function __construct(
         private TokenStorageInterface $tokenStorage,
-        private UserRepository $userRepository
+        private UserIdProviderInterface $userIdProvider
     ) {
     }
 
@@ -35,6 +35,6 @@ final readonly class CurrentUserResolver
             throw new LogicException('User identifier is missing.');
         }
 
-        return $this->userRepository->getIdByEmail($identifier);
+        return $this->userIdProvider->getIdByEmail($identifier);
     }
 }

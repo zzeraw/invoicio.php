@@ -2,13 +2,14 @@
 
 namespace App\InvoiceBundle\Service;
 
-use App\InvoiceBundle\Dto\ClientDto;
-use App\InvoiceBundle\Dto\CreateClientInputDto;
-use App\InvoiceBundle\Dto\UpdateClientInputDto;
+use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
+use App\InvoiceBundle\PublicInterface\CreateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
+use App\InvoiceBundle\PublicService\ClientManageServiceInterface;
 use App\InvoiceBundle\Repository\ClientRepository;
 use InvalidArgumentException;
 
-final class ClientManageService
+final class ClientManageService implements ClientManageServiceInterface
 {
     public function __construct(
         private readonly ClientRepository $clientRepository
@@ -16,19 +17,19 @@ final class ClientManageService
     }
 
     /**
-     * @return array<int, ClientDto>
+     * @return array<int, ClientDtoInterface>
      */
     public function listForUser(int $userId): array
     {
         return $this->clientRepository->listForUser($userId);
     }
 
-    public function getForUser(int $userId, int $clientId): ?ClientDto
+    public function getForUser(int $userId, int $clientId): ?ClientDtoInterface
     {
         return $this->clientRepository->getForUser($userId, $clientId);
     }
 
-    public function createForUser(int $userId, CreateClientInputDto $input): ClientDto
+    public function createForUser(int $userId, CreateClientInputDtoInterface $input): ClientDtoInterface
     {
         if ('' === $input->getName()) {
             throw new InvalidArgumentException('Name is required.');
@@ -37,9 +38,9 @@ final class ClientManageService
         return $this->clientRepository->createForUser($userId, $input);
     }
 
-    public function updateForUser(int $userId, int $clientId, UpdateClientInputDto $input): ?ClientDto
+    public function updateForUser(int $userId, int $clientId, UpdateClientInputDtoInterface $input): ?ClientDtoInterface
     {
-        if ($input->hasField('name') && (null === $input->getName() || '' === $input->getName())) {
+        if ($this->hasField($input->getFields(), 'name') && (null === $input->getName() || '' === $input->getName())) {
             throw new InvalidArgumentException('Name is required.');
         }
 
@@ -49,5 +50,13 @@ final class ClientManageService
     public function deleteForUser(int $userId, int $clientId): bool
     {
         return $this->clientRepository->deleteForUser($userId, $clientId);
+    }
+
+    /**
+     * @param array<string, bool> $fields
+     */
+    private function hasField(array $fields, string $name): bool
+    {
+        return true === ($fields[$name] ?? false);
     }
 }
