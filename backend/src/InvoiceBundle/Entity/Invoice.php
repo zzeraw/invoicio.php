@@ -2,7 +2,6 @@
 
 namespace App\InvoiceBundle\Entity;
 
-use App\UserBundle\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,9 +26,8 @@ final class Invoice
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private User $user;
+    #[ORM\Column(name: 'user_id', type: 'integer')]
+    private int $userId;
 
     #[ORM\ManyToOne(targetEntity: Client::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -78,14 +76,14 @@ final class Invoice
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUserId(): int
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function setUser(User $user): void
+    public function setUserId(int $userId): void
     {
-        $this->user = $user;
+        $this->userId = $userId;
     }
 
     public function getClient(): Client

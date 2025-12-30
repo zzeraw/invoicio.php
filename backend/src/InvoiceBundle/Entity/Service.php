@@ -2,7 +2,6 @@
 
 namespace App\InvoiceBundle\Entity;
 
-use App\UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -16,9 +15,8 @@ final class Service
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private User $user;
+    #[ORM\Column(name: 'user_id', type: 'integer')]
+    private int $userId;
 
     #[ORM\Column(name: 'name_ru', length: 255, nullable: true)]
     private ?string $nameRu = null;
@@ -40,14 +38,14 @@ final class Service
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUserId(): int
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function setUser(User $user): void
+    public function setUserId(int $userId): void
     {
-        $this->user = $user;
+        $this->userId = $userId;
     }
 
     public function getNameRu(): ?string

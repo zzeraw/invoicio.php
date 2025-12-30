@@ -46,6 +46,7 @@ final class SeedDevCommand extends Command
 
         $userRepo = $this->entityManager->getRepository(User::class);
         $user = $userRepo->findOneBy(['email' => 'admin@example.com']);
+        $isNewUser = false;
         if (!$user instanceof User) {
             $user = new User();
             $user->setEmail('admin@example.com');
@@ -53,13 +54,24 @@ final class SeedDevCommand extends Command
             $user->setStatus(User::STATUS_ACTIVE);
             $user->setPasswordHash(password_hash('admin123', PASSWORD_DEFAULT));
             $this->entityManager->persist($user);
+            $isNewUser = true;
+        }
+
+        if ($isNewUser) {
+            $this->entityManager->flush();
+        }
+
+        $userId = $user->getId();
+        if ($userId === null) {
+            $io->error('Failed to resolve user id for seed data.');
+            return Command::FAILURE;
         }
 
         $clientRepo = $this->entityManager->getRepository(Client::class);
-        $client = $clientRepo->findOneBy(['name' => 'Test Client', 'user' => $user]);
+        $client = $clientRepo->findOneBy(['name' => 'Test Client', 'userId' => $userId]);
         if (!$client instanceof Client) {
             $client = new Client();
-            $client->setUser($user);
+            $client->setUserId($userId);
             $client->setName('Test Client');
             $client->setCountryCode('RU');
             $client->setTaxId('7701234567');
@@ -86,10 +98,10 @@ final class SeedDevCommand extends Command
         }
 
         $serviceRepo = $this->entityManager->getRepository(Service::class);
-        $service = $serviceRepo->findOneBy(['user' => $user, 'nameRu' => 'Консультации']);
+        $service = $serviceRepo->findOneBy(['userId' => $userId, 'nameRu' => 'Консультации']);
         if (!$service instanceof Service) {
             $service = new Service();
-            $service->setUser($user);
+            $service->setUserId($userId);
             $service->setNameRu('Консультации');
             $service->setNameEn('Consulting');
             $this->entityManager->persist($service);
@@ -99,7 +111,7 @@ final class SeedDevCommand extends Command
         $invoice = $invoiceRepo->findOneBy(['invoiceNumber' => 'INV-0001']);
         if (!$invoice instanceof Invoice) {
             $invoice = new Invoice();
-            $invoice->setUser($user);
+            $invoice->setUserId($userId);
             $invoice->setClient($client);
             $invoice->setLanguage('ru');
             $invoice->setInvoiceNumber('INV-0001');
