@@ -7,4 +7,13 @@ nelmio_api_doc:
     areas:
         default:
             path_patterns:
-                - ^/api
+                - ^/app/v1
+        app:
+            path_patterns:
+                - ^/app/v1
+        admin:
+            path_patterns:
+                - ^/admin/v1
+        api:
+            path_patterns:
+                - ^/api/v1

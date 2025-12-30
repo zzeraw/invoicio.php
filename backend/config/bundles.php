@@ -1,7 +1,9 @@
 <?php
 
 return [
+    App\AdminBundle\AdminBundle::class => ['all' => true],
     App\AppBundle\AppBundle::class => ['all' => true],
+    App\ApiBundle\ApiBundle::class => ['all' => true],
     App\InvoiceBundle\InvoiceBundle::class => ['all' => true],
     App\UserBundle\UserBundle::class => ['all' => true],
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],

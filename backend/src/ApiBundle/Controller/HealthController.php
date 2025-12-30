@@ -1,6 +1,6 @@
 <?php
 
-namespace App\AppBundle\Controller;
+namespace App\ApiBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class HealthController
 {
     #[OA\Get(
-        path: '/app/v1/health',
+        path: '/api/v1/health',
         summary: 'Health check',
         tags: ['Health']
     )]
@@ -17,7 +17,7 @@ final class HealthController
         response: 200,
         description: 'Service is healthy'
     )]
-    #[Route('/app/v1/health', name: 'app_health', methods: ['GET'])]
+    #[Route('/api/v1/health', name: 'api_health', methods: ['GET'])]
     public function __invoke(): JsonResponse
     {
         return new JsonResponse(['status' => 'ok']);
