@@ -8,12 +8,6 @@ use InvalidArgumentException;
 
 final class UserManageService
 {
-    public const DEFAULT_ROLE = 'admin';
-    public const DEFAULT_STATUS = 'active';
-
-    private const ALLOWED_ROLES = ['admin', 'user'];
-    private const ALLOWED_STATUSES = ['active', 'blocked'];
-
     public function __construct(
         private readonly UserRepository $userRepository
     ) {
@@ -28,12 +22,6 @@ final class UserManageService
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException('Email is invalid.');
         }
-        if (!in_array($input->getRole(), self::ALLOWED_ROLES, true)) {
-            throw new InvalidArgumentException('Role is invalid.');
-        }
-        if (!in_array($input->getStatus(), self::ALLOWED_STATUSES, true)) {
-            throw new InvalidArgumentException('Status is invalid.');
-        }
         if ('' === $input->getPassword()) {
             throw new InvalidArgumentException('Password is required.');
         }
@@ -42,6 +30,11 @@ final class UserManageService
         }
 
         $passwordHash = password_hash($input->getPassword(), PASSWORD_DEFAULT);
-        return $this->userRepository->createUser($email, $passwordHash, $input->getRole(), $input->getStatus());
+        return $this->userRepository->createUser(
+            $email,
+            $passwordHash,
+            $input->getRole()->value,
+            $input->getStatus()->value
+        );
     }
 }

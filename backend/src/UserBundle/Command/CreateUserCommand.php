@@ -3,6 +3,8 @@
 namespace App\UserBundle\Command;
 
 use App\UserBundle\Dto\CreateUserInputDto;
+use App\UserBundle\Enum\UserRoleEnum;
+use App\UserBundle\Enum\UserStatusEnum;
 use App\UserBundle\Service\UserManageService;
 use InvalidArgumentException;
 use RuntimeException;
@@ -31,19 +33,22 @@ final class CreateUserCommand extends Command
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'User email')
             ->addArgument('password', InputArgument::REQUIRED, 'User password')
-            ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'User role', UserManageService::DEFAULT_ROLE)
-            ->addOption('status', null, InputOption::VALUE_OPTIONAL, 'User status', UserManageService::DEFAULT_STATUS);
+            ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'User role', UserRoleEnum::ADMIN->value)
+            ->addOption('status', null, InputOption::VALUE_OPTIONAL, 'User status', UserStatusEnum::ACTIVE->value);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
+        $role = UserRoleEnum::fromString($this->getStringOption($input, 'role'));
+        $status = UserStatusEnum::fromString($this->getStringOption($input, 'status'));
+
         $createUserInput = new CreateUserInputDto(
             $this->getStringArgument($input, 'email'),
             $this->getStringArgument($input, 'password'),
-            $this->getStringOption($input, 'role'),
-            $this->getStringOption($input, 'status')
+            $role,
+            $status
         );
 
         try {

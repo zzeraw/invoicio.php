@@ -2,13 +2,16 @@
 
 namespace App\UserBundle\Dto;
 
+use App\UserBundle\Enum\UserRoleEnum;
+use App\UserBundle\Enum\UserStatusEnum;
+
 final readonly class CreateUserInputDto
 {
     public function __construct(
         private string $email,
         private string $password,
-        private string $role,
-        private string $status
+        private UserRoleEnum $role,
+        private UserStatusEnum $status
     ) {
     }
 
@@ -22,12 +25,12 @@ final readonly class CreateUserInputDto
         return $this->password;
     }
 
-    public function getRole(): string
+    public function getRole(): UserRoleEnum
     {
         return $this->role;
     }
 
-    public function getStatus(): string
+    public function getStatus(): UserStatusEnum
     {
         return $this->status;
     }

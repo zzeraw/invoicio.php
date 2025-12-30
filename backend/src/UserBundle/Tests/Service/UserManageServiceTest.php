@@ -3,6 +3,8 @@
 namespace App\UserBundle\Tests\Service;
 
 use App\UserBundle\Dto\CreateUserInputDto;
+use App\UserBundle\Enum\UserRoleEnum;
+use App\UserBundle\Enum\UserStatusEnum;
 use App\UserBundle\Repository\UserRepository;
 use App\UserBundle\Service\UserManageService;
 use App\UserBundle\Tests\Fixtures\AliceFixtureLoader;
@@ -50,7 +52,7 @@ final class UserManageServiceTest extends KernelTestCase
      */
     public function testCreateUserCreatesRecord(): void
     {
-        $input = new CreateUserInputDto('user@example.com', 'secret', 'admin', 'active');
+        $input = new CreateUserInputDto('user@example.com', 'secret', UserRoleEnum::ADMIN, UserStatusEnum::ACTIVE);
         $userId = $this->service->createUser($input);
 
         $this->assertGreaterThan(0, $userId);
@@ -67,7 +69,7 @@ final class UserManageServiceTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('User with this email already exists.');
 
-        $input = new CreateUserInputDto('admin@example.com', 'secret', 'admin', 'active');
+        $input = new CreateUserInputDto('admin@example.com', 'secret', UserRoleEnum::ADMIN, UserStatusEnum::ACTIVE);
         $this->service->createUser($input);
     }
 
@@ -79,7 +81,7 @@ final class UserManageServiceTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Email is invalid.');
 
-        $input = new CreateUserInputDto('not-an-email', 'secret', 'admin', 'active');
+        $input = new CreateUserInputDto('not-an-email', 'secret', UserRoleEnum::ADMIN, UserStatusEnum::ACTIVE);
         $this->service->createUser($input);
     }
 }
