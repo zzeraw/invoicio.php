@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Project PER-CS">
-    <description>Project coding standard (PER-CS).</description>
+<ruleset name="Project PSR-12">
+    <description>Project coding standard (PSR-12).</description>
 
-    <rule ref="PER-CS"/>
+    <rule ref="PSR12"/>
 
     <file>src</file>
 

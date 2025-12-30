@@ -69,7 +69,7 @@
         "test": "vendor/bin/codecept run",
         "phpstan": "vendor/bin/phpstan analyse",
         "cs-fix": "vendor/bin/php-cs-fixer fix",
-        "phpcs": "vendor/bin/phpcs",
+        "phpcs": "vendor/bin/phpcs --report=summary",
         "post-install-cmd": [
             "@auto-scripts"
         ],
