@@ -5,22 +5,16 @@ Invoicio (PHP)
 
 ---
 
-## Инструкция по развертыванию проекта локально
-
-### 1. Установить Docker и Docker Compose
-
-Для работы с проектом локально необходимо установить Docker и Docker Compose.
-
-Проект был развернут успешно на следующей конфигурации:
+## Общие требования
 
 - Docker version 28.0.4
 - Docker Compose version v2.34.0
 
+Не ниже 2 версии должен быть Docker Compose.
+
 Скорее всего запустится и на других версиях.
 
-Docker Compose обязательно должен быть не ниже 2 версии.
-
-### 2. Скопировать проект из Github
+## Клонирование репозитория
 
 В первую очередь:
 
@@ -46,46 +40,11 @@ git config user.email johndoe@example.com
 Склонируйте код в папку проекта:
 
 ```bash
-https://github.com/zzeraw/invoicio.php
+git clone https://github.com/zzeraw/invoicio.php
 ```
 
-Переходим в папку проекта:
+## Документация по запуску и развертыванию
 
----
-
-
-docker compose exec php bin/console cache:clear
-docker compose exec php composer update nelmio/api-doc-bundle
-docker compose exec php bin/console doctrine:migrations:migrate
-docker compose --env-file .env up -d --force-recreate php
-docker compose exec php bash
-docker compose exec postgres psql -U user -d invoicio
-
-
-./vendor/bin/codecept run
-
-
-docker compose exec php composer install
-
-docker compose exec php ./vendor/bin/codecept run
-
-
-docker compose up -d --wait postgres_test
-cd backend && ./vendor/bin/codecept run
-
-
-
-
-
-
-
-
-docker compose exec php ./vendor/bin/codecept run
-docker compose exec php ./vendor/bin/phpstan analyse
-docker compose exec php ./vendor/bin/php-cs-fixer fix
-docker compose exec php ./vendor/bin/phpcs
-
-
-
-http://localhost/api/doc/
-http://localhost/api/health
+- `frontend/README.md` — запуск фронтенда
+- `backend/README.md` — запуск бэкенда, миграции, тесты и сервисные команды
+- `deploy/README.md` — запуск стека через Docker Compose
