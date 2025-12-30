@@ -3,7 +3,7 @@
 namespace App\InvoiceBundle\PublicService;
 
 use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
-use App\InvoiceBundle\PublicInterface/CreateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\CreateClientInputDtoInterface;
 use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
 
 interface ClientManageServiceInterface
