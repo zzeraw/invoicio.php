@@ -29,7 +29,7 @@ final readonly class ApiTokenRepository
     private function convertEntityToApiTokenDto(ApiToken $entity): ApiTokenDto
     {
         $id = $entity->getId();
-        if ($id === null) {
+        if (null === $id) {
             throw new \LogicException('ApiToken id is not set.');
         }
 
