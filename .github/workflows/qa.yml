@@ -18,5 +18,8 @@ jobs:
           php-version: "8.4"
           tools: composer
       - run: composer install --no-interaction --no-progress
+        env:
+          APP_ENV: test
+          DATABASE_URL: "sqlite:///:memory:"
       - run: composer phpstan
       - run: composer phpcs
