@@ -22,6 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class CreateUserCommand extends Command
 {
+    // Example: php bin/console app:user:create admin@example.com secret --role=admin --status=active
     public function __construct(
         private readonly UserManageService $userManageService
     ) {

@@ -10,3 +10,11 @@
 controllers:
     resource: ../src/
     type: attribute
+
+app_login:
+    path: /app/v1/login
+    methods: [POST]
+
+admin_login:
+    path: /admin/v1/login
+    methods: [POST]

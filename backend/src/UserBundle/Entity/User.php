@@ -3,18 +3,20 @@
 namespace App\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
 #[ORM\UniqueConstraint(name: 'uniq_users_email', columns: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-final class User
+final class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_BLOCKED = 'blocked';
+    public const string STATUS_ACTIVE = 'active';
+    public const string STATUS_BLOCKED = 'blocked';
 
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_USER = 'user';
+    public const string ROLE_ADMIN = 'admin';
+    public const string ROLE_USER = 'user';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -60,6 +62,11 @@ final class User
         $this->email = $email;
     }
 
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
     public function getStatus(): string
     {
         return $this->status;
@@ -80,6 +87,16 @@ final class User
         $this->role = $role;
     }
 
+    public function getRoles(): array
+    {
+        $roles = ['ROLE_USER'];
+        if (self::ROLE_ADMIN === $this->role) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        return $roles;
+    }
+
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
@@ -88,6 +105,15 @@ final class User
     public function setPasswordHash(string $passwordHash): void
     {
         $this->passwordHash = $passwordHash;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->passwordHash;
+    }
+
+    public function eraseCredentials(): void
+    {
     }
 
     public function getPasswordResetToken(): ?string

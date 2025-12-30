@@ -2,6 +2,9 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->in([
+        __DIR__ . '/src/AdminBundle',
+        __DIR__ . '/src/AppBundle',
+        __DIR__ . '/src/ApiBundle',
         __DIR__ . '/src/AppBundle',
         __DIR__ . '/src/InvoiceBundle',
         __DIR__ . '/src/UserBundle',
