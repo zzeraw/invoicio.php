@@ -12,7 +12,7 @@ enum UserStatusEnum: string
     public static function fromString(string $value): self
     {
         $status = self::tryFrom($value);
-        if ($status === null) {
+        if (null === $status) {
             throw new InvalidArgumentException('Status is invalid.');
         }
 

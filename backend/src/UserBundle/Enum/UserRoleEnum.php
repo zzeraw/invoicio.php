@@ -12,7 +12,7 @@ enum UserRoleEnum: string
     public static function fromString(string $value): self
     {
         $role = self::tryFrom($value);
-        if ($role === null) {
+        if (null === $role) {
             throw new InvalidArgumentException('Role is invalid.');
         }
 

@@ -84,3 +84,8 @@ docker compose exec php ./vendor/bin/codecept run
 docker compose exec php ./vendor/bin/phpstan analyse
 docker compose exec php ./vendor/bin/php-cs-fixer fix
 docker compose exec php ./vendor/bin/phpcs
+
+
+
+http://localhost/api/doc/
+http://localhost/api/health

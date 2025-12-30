@@ -31,7 +31,7 @@ final readonly class UserRepository
         $this->entityManager->flush();
 
         $id = $user->getId();
-        if ($id === null) {
+        if (null === $id) {
             throw new RuntimeException('Failed to persist user.');
         }
 

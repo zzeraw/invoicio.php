@@ -39,7 +39,7 @@ final class SeedDevCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if ($this->environment !== 'dev' && !$input->getOption('force')) {
+        if ('dev' !== $this->environment && !$input->getOption('force')) {
             $io->error('Seeding is allowed only in dev. Use --force to override.');
             return Command::FAILURE;
         }
@@ -62,7 +62,7 @@ final class SeedDevCommand extends Command
         }
 
         $userId = $user->getId();
-        if ($userId === null) {
+        if (null === $userId) {
             $io->error('Failed to resolve user id for seed data.');
             return Command::FAILURE;
         }

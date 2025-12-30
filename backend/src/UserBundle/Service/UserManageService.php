@@ -16,7 +16,7 @@ final class UserManageService
     public function createUser(CreateUserInputDto $input): int
     {
         $email = trim($input->getEmail());
-        if ($email === '') {
+        if ('' === $email) {
             throw new InvalidArgumentException('Email is required.');
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
