@@ -2,8 +2,10 @@
 
 namespace App\UserBundle\Command;
 
-use App\UserBundle\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\UserBundle\Dto\CreateUserInputDto;
+use App\UserBundle\Service\UserManageService;
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,8 +20,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class CreateUserCommand extends Command
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly UserManageService $userManageService
+    ) {
         parent::__construct();
     }
 
@@ -28,31 +31,29 @@ final class CreateUserCommand extends Command
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'User email')
             ->addArgument('password', InputArgument::REQUIRED, 'User password')
-            ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'User role', User::ROLE_ADMIN)
-            ->addOption('status', null, InputOption::VALUE_OPTIONAL, 'User status', User::STATUS_ACTIVE);
+            ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'User role', UserManageService::DEFAULT_ROLE)
+            ->addOption('status', null, InputOption::VALUE_OPTIONAL, 'User status', UserManageService::DEFAULT_STATUS);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $email = (string) $input->getArgument('email');
 
-        $existing = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
-        if ($existing instanceof User) {
-            $io->error('User with this email already exists.');
+        $createUserInput = new CreateUserInputDto(
+            (string) $input->getArgument('email'),
+            (string) $input->getArgument('password'),
+            (string) $input->getOption('role'),
+            (string) $input->getOption('status')
+        );
+
+        try {
+            $userId = $this->userManageService->createUser($createUserInput);
+        } catch (InvalidArgumentException | RuntimeException $exception) {
+            $io->error($exception->getMessage());
             return Command::FAILURE;
         }
 
-        $user = new User();
-        $user->setEmail($email);
-        $user->setRole((string) $input->getOption('role'));
-        $user->setStatus((string) $input->getOption('status'));
-        $user->setPasswordHash(password_hash((string) $input->getArgument('password'), PASSWORD_DEFAULT));
-
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-
-        $io->success('User created.');
+        $io->success(sprintf('User created (id: %d).', $userId));
 
         return Command::SUCCESS;
     }

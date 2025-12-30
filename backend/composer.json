@@ -22,6 +22,11 @@
         "symfony/yaml": "7.4.*"
     },
     "require-dev": {
+        "codeception/codeception": "^5.2",
+        "doctrine/data-fixtures": "^2.1",
+        "nelmio/alice": "^3.14",
+        "phpunit/phpunit": "^11.5",
+        "symfony/phpunit-bridge": "^7.4"
     },
     "config": {
         "allow-plugins": {
@@ -57,6 +62,7 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
+        "test": "vendor/bin/codecept run",
         "post-install-cmd": [
             "@auto-scripts"
         ],
