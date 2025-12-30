@@ -51,3 +51,24 @@ https://github.com/zzeraw/invoicio.php
 
 Переходим в папку проекта:
 
+---
+
+
+docker compose exec php bin/console cache:clear
+docker compose exec php composer update nelmio/api-doc-bundle
+docker compose exec php bin/console doctrine:migrations:migrate
+docker compose --env-file .env up -d --force-recreate php
+docker compose exec php bash
+docker compose exec postgres psql -U user -d invoicio
+
+
+./vendor/bin/codecept run
+
+
+docker compose exec php composer install
+
+docker compose exec php ./vendor/bin/codecept run
+
+
+docker compose up -d --wait postgres_test
+cd backend && ./vendor/bin/codecept run

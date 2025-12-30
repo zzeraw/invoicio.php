@@ -1,0 +1,6 @@
+App\UserBundle\Entity\User:
+    user_admin:
+        email: admin@example.com
+        status: active
+        role: admin
+        passwordHash: 'hash'

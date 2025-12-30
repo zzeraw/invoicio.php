@@ -1,0 +1,8 @@
+path: ../src/UserBundle/Tests
+bootstrap: _bootstrap.php
+modules:
+  enabled:
+    - Asserts
+env:
+  KERNEL_CLASS: App\Kernel
+  APP_ENV: test

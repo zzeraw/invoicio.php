@@ -1,0 +1,9 @@
+paths:
+  tests: tests
+  output: var/codeception
+  support: tests/_support
+  data: tests/_data
+  envs: tests/_envs
+settings:
+  colors: true
+  memory_limit: 2048M

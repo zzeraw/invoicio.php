@@ -35,6 +35,23 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  postgres_test:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: invoicio_test
+      POSTGRES_USER: invoicio_test
+      POSTGRES_PASSWORD: invoicio_test
+    volumes:
+      - db_test_data:/var/lib/postgresql/data
+      - ./backend/migrations/schema:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "invoicio_test", "-U", "invoicio_test"]
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "5434:5432"
+
   frontend:
     image: node:20-alpine
     working_dir: /app
@@ -48,3 +65,4 @@ services:
 
 volumes:
   db_data:
+  db_test_data:
