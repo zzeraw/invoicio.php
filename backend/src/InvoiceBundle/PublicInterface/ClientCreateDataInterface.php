@@ -2,7 +2,7 @@
 
 namespace App\InvoiceBundle\PublicInterface;
 
-interface CreateClientInputDtoInterface
+interface ClientCreateDataInterface
 {
     public function getName(): string;
 

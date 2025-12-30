@@ -2,8 +2,8 @@
 
 namespace App\InvoiceBundle\Tests\Service;
 
-use App\InvoiceBundle\Dto\CreateClientInputDto;
-use App\InvoiceBundle\Dto\UpdateClientInputDto;
+use App\InvoiceBundle\PublicInterface\ClientCreateDataInterface;
+use App\InvoiceBundle\PublicInterface\ClientUpdateDataInterface;
 use App\InvoiceBundle\Service\ClientManageService;
 use App\UserBundle\Enum\UserRoleEnum;
 use App\UserBundle\Enum\UserStatusEnum;
@@ -28,7 +28,7 @@ final class ClientManageServiceTest extends KernelTestCase
             UserStatusEnum::ACTIVE->value
         );
 
-        $created = $service->createForUser($userId, new CreateClientInputDto(
+        $created = $service->createForUser($userId, $this->createCreateData(
             'Client A',
             null,
             'RU',
@@ -48,7 +48,7 @@ final class ClientManageServiceTest extends KernelTestCase
         Assert::assertNotNull($found);
         Assert::assertSame($created->getId(), $found->getId());
 
-        $updated = $service->updateForUser($userId, $created->getId(), new UpdateClientInputDto(
+        $updated = $service->updateForUser($userId, $created->getId(), $this->createUpdateData(
             'Client B',
             null,
             null,
@@ -88,7 +88,7 @@ final class ClientManageServiceTest extends KernelTestCase
             UserStatusEnum::ACTIVE->value
         );
 
-        $client = $service->createForUser($userId1, new CreateClientInputDto(
+        $client = $service->createForUser($userId1, $this->createCreateData(
             'Client X',
             null,
             null,
@@ -117,7 +117,7 @@ final class ClientManageServiceTest extends KernelTestCase
             UserStatusEnum::ACTIVE->value
         );
 
-        $client = $service->createForUser($userId, new CreateClientInputDto(
+        $client = $service->createForUser($userId, $this->createCreateData(
             'Client Y',
             null,
             null,
@@ -130,7 +130,7 @@ final class ClientManageServiceTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Name is required.');
 
-        $service->updateForUser($userId, $client->getId(), new UpdateClientInputDto(
+        $service->updateForUser($userId, $client->getId(), $this->createUpdateData(
             '',
             null,
             null,
@@ -172,5 +172,168 @@ final class ClientManageServiceTest extends KernelTestCase
         $userRepository = $container->get(UserRepository::class);
 
         return $userRepository;
+    }
+
+    /**
+     * @param array<string, mixed>|null $legalDetails
+     */
+    private function createCreateData(
+        string $name,
+        ?string $legalAddress,
+        ?string $countryCode,
+        ?string $taxId,
+        ?string $taxKpp,
+        ?string $registrationNumber,
+        ?array $legalDetails
+    ): ClientCreateDataInterface {
+        return new class(
+            $name,
+            $legalAddress,
+            $countryCode,
+            $taxId,
+            $taxKpp,
+            $registrationNumber,
+            $legalDetails
+        ) implements ClientCreateDataInterface {
+            /**
+             * @param array<string, mixed>|null $legalDetails
+             */
+            public function __construct(
+                private string $name,
+                private ?string $legalAddress,
+                private ?string $countryCode,
+                private ?string $taxId,
+                private ?string $taxKpp,
+                private ?string $registrationNumber,
+                private ?array $legalDetails
+            ) {
+            }
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function getLegalAddress(): ?string
+            {
+                return $this->legalAddress;
+            }
+
+            public function getCountryCode(): ?string
+            {
+                return $this->countryCode;
+            }
+
+            public function getTaxId(): ?string
+            {
+                return $this->taxId;
+            }
+
+            public function getTaxKpp(): ?string
+            {
+                return $this->taxKpp;
+            }
+
+            public function getRegistrationNumber(): ?string
+            {
+                return $this->registrationNumber;
+            }
+
+            /**
+             * @return array<string, mixed>|null
+             */
+            public function getLegalDetails(): ?array
+            {
+                return $this->legalDetails;
+            }
+        };
+    }
+
+    /**
+     * @param array<string, mixed>|null $legalDetails
+     * @param array<string, bool> $fields
+     */
+    private function createUpdateData(
+        ?string $name,
+        ?string $legalAddress,
+        ?string $countryCode,
+        ?string $taxId,
+        ?string $taxKpp,
+        ?string $registrationNumber,
+        ?array $legalDetails,
+        array $fields
+    ): ClientUpdateDataInterface {
+        return new class(
+            $name,
+            $legalAddress,
+            $countryCode,
+            $taxId,
+            $taxKpp,
+            $registrationNumber,
+            $legalDetails,
+            $fields
+        ) implements ClientUpdateDataInterface {
+            /**
+             * @param array<string, mixed>|null $legalDetails
+             * @param array<string, bool> $fields
+             */
+            public function __construct(
+                private ?string $name,
+                private ?string $legalAddress,
+                private ?string $countryCode,
+                private ?string $taxId,
+                private ?string $taxKpp,
+                private ?string $registrationNumber,
+                private ?array $legalDetails,
+                private array $fields
+            ) {
+            }
+
+            public function getName(): ?string
+            {
+                return $this->name;
+            }
+
+            public function getLegalAddress(): ?string
+            {
+                return $this->legalAddress;
+            }
+
+            public function getCountryCode(): ?string
+            {
+                return $this->countryCode;
+            }
+
+            public function getTaxId(): ?string
+            {
+                return $this->taxId;
+            }
+
+            public function getTaxKpp(): ?string
+            {
+                return $this->taxKpp;
+            }
+
+            public function getRegistrationNumber(): ?string
+            {
+                return $this->registrationNumber;
+            }
+
+            /**
+             * @return array<string, mixed>|null
+             */
+            public function getLegalDetails(): ?array
+            {
+                return $this->legalDetails;
+            }
+
+            /**
+             * @return array<string, bool>
+             */
+            public function getFields(): array
+            {
+                return $this->fields;
+            }
+        };
     }
 }

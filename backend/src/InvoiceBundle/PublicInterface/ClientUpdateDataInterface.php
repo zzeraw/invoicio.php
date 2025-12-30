@@ -2,7 +2,7 @@
 
 namespace App\InvoiceBundle\PublicInterface;
 
-interface UpdateClientInputDtoInterface
+interface ClientUpdateDataInterface
 {
     public function getName(): ?string;
 

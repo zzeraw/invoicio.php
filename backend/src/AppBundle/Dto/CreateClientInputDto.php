@@ -1,28 +1,26 @@
 <?php
 
-namespace App\InvoiceBundle\Dto;
+namespace App\AppBundle\Dto;
 
-use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\ClientCreateDataInterface;
 
-final readonly class UpdateClientInputDto implements UpdateClientInputDtoInterface
+final readonly class CreateClientInputDto implements ClientCreateDataInterface
 {
     /**
      * @param array<string, mixed>|null $legalDetails
-     * @param array<string, bool> $fields
      */
     public function __construct(
-        private ?string $name,
+        private string $name,
         private ?string $legalAddress,
         private ?string $countryCode,
         private ?string $taxId,
         private ?string $taxKpp,
         private ?string $registrationNumber,
-        private ?array $legalDetails,
-        private array $fields
+        private ?array $legalDetails
     ) {
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -58,13 +56,5 @@ final readonly class UpdateClientInputDto implements UpdateClientInputDtoInterfa
     public function getLegalDetails(): ?array
     {
         return $this->legalDetails;
-    }
-
-    /**
-     * @return array<string, bool>
-     */
-    public function getFields(): array
-    {
-        return $this->fields;
     }
 }

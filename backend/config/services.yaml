@@ -26,5 +26,4 @@ services:
 
 
     App\InvoiceBundle\PublicService\ClientManageServiceInterface: '@App\InvoiceBundle\Service\ClientManageService'
-    App\InvoiceBundle\PublicService\ClientDtoFactoryInterface: '@App\InvoiceBundle\Service\ClientDtoFactory'
     App\UserBundle\PublicService\UserIdProviderInterface: '@App\UserBundle\Service\UserIdProvider'

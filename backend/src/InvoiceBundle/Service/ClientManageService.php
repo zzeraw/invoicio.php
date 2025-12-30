@@ -2,9 +2,9 @@
 
 namespace App\InvoiceBundle\Service;
 
+use App\InvoiceBundle\PublicInterface\ClientCreateDataInterface;
 use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
-use App\InvoiceBundle\PublicInterface\CreateClientInputDtoInterface;
-use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\ClientUpdateDataInterface;
 use App\InvoiceBundle\PublicService\ClientManageServiceInterface;
 use App\InvoiceBundle\Repository\ClientRepository;
 use InvalidArgumentException;
@@ -29,7 +29,7 @@ final class ClientManageService implements ClientManageServiceInterface
         return $this->clientRepository->getForUser($userId, $clientId);
     }
 
-    public function createForUser(int $userId, CreateClientInputDtoInterface $input): ClientDtoInterface
+    public function createForUser(int $userId, ClientCreateDataInterface $input): ClientDtoInterface
     {
         if ('' === $input->getName()) {
             throw new InvalidArgumentException('Name is required.');
@@ -38,7 +38,7 @@ final class ClientManageService implements ClientManageServiceInterface
         return $this->clientRepository->createForUser($userId, $input);
     }
 
-    public function updateForUser(int $userId, int $clientId, UpdateClientInputDtoInterface $input): ?ClientDtoInterface
+    public function updateForUser(int $userId, int $clientId, ClientUpdateDataInterface $input): ?ClientDtoInterface
     {
         if ($this->hasField($input->getFields(), 'name') && (null === $input->getName() || '' === $input->getName())) {
             throw new InvalidArgumentException('Name is required.');

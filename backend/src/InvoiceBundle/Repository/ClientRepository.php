@@ -4,9 +4,9 @@ namespace App\InvoiceBundle\Repository;
 
 use App\InvoiceBundle\Dto\ClientDto;
 use App\InvoiceBundle\Entity\Client;
+use App\InvoiceBundle\PublicInterface\ClientCreateDataInterface;
 use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
-use App\InvoiceBundle\PublicInterface\CreateClientInputDtoInterface;
-use App\InvoiceBundle\PublicInterface\UpdateClientInputDtoInterface;
+use App\InvoiceBundle\PublicInterface\ClientUpdateDataInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use LogicException;
@@ -54,7 +54,7 @@ final readonly class ClientRepository
         return $this->convertEntityToDto($client);
     }
 
-    public function createForUser(int $userId, CreateClientInputDtoInterface $input): ClientDtoInterface
+    public function createForUser(int $userId, ClientCreateDataInterface $input): ClientDtoInterface
     {
         $client = new Client();
         $client->setUserId($userId);
@@ -75,7 +75,7 @@ final readonly class ClientRepository
     public function updateForUser(
         int $userId,
         int $clientId,
-        UpdateClientInputDtoInterface $input
+        ClientUpdateDataInterface $input
     ): ?ClientDtoInterface {
         $repository = $this->entityManager->getRepository(Client::class);
         $client = $repository->findOneBy(

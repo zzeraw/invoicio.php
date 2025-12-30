@@ -2,10 +2,7 @@
 
 namespace App\AppBundle\Controller;
 
-use App\AppBundle\Security\CurrentUserResolver;
-use App\InvoiceBundle\PublicInterface\ClientDtoInterface;
-use App\InvoiceBundle\PublicService\ClientDtoFactoryInterface;
-use App\InvoiceBundle\PublicService\ClientManageServiceInterface;
+use App\AppBundle\Service\ClientManageService;
 use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,9 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ClientController
 {
     public function __construct(
-        private readonly ClientManageServiceInterface $clientManageService,
-        private readonly ClientDtoFactoryInterface $clientDtoFactory,
-        private readonly CurrentUserResolver $currentUserResolver
+        private readonly ClientManageService $clientManageService
     ) {
     }
 
@@ -35,10 +30,7 @@ final class ClientController
     #[Route('', name: 'app_clients_list', methods: ['GET'])]
     public function list(): JsonResponse
     {
-        $userId = $this->currentUserResolver->getUserId();
-        $clients = $this->clientManageService->listForUser($userId);
-
-        $payload = array_map([$this, 'normalizeClient'], $clients);
+        $payload = $this->clientManageService->listForCurrentUser();
 
         return new JsonResponse($payload);
     }
@@ -59,14 +51,13 @@ final class ClientController
     #[Route('/{id}', name: 'app_clients_get', methods: ['GET'])]
     public function get(int $id): JsonResponse
     {
-        $userId = $this->currentUserResolver->getUserId();
-        $client = $this->clientManageService->getForUser($userId, $id);
+        $client = $this->clientManageService->getForCurrentUser($id);
 
         if (null === $client) {
             return new JsonResponse(['message' => 'Client not found.'], Response::HTTP_NOT_FOUND);
         }
 
-        return new JsonResponse($this->normalizeClient($client));
+        return new JsonResponse($client);
     }
 
     #[OA\Post(
@@ -87,28 +78,12 @@ final class ClientController
     {
         try {
             $data = $this->getPayload($request);
-            $name = $this->getOptionalString($data, 'name');
-            if (null === $name || '' === $name) {
-                return new JsonResponse(['message' => 'Name is required.'], Response::HTTP_BAD_REQUEST);
-            }
-
-            $input = $this->clientDtoFactory->createCreateInput(
-                $name,
-                $this->getOptionalString($data, 'legal_address'),
-                $this->getOptionalString($data, 'country_code'),
-                $this->getOptionalString($data, 'tax_id'),
-                $this->getOptionalString($data, 'tax_kpp'),
-                $this->getOptionalString($data, 'registration_number'),
-                $this->getOptionalArray($data, 'legal_details')
-            );
+            $client = $this->clientManageService->createForCurrentUser($data);
         } catch (InvalidArgumentException $exception) {
             return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        $userId = $this->currentUserResolver->getUserId();
-        $client = $this->clientManageService->createForUser($userId, $input);
-
-        return new JsonResponse($this->normalizeClient($client), Response::HTTP_CREATED);
+        return new JsonResponse($client, Response::HTTP_CREATED);
     }
 
     #[OA\Put(
@@ -129,24 +104,7 @@ final class ClientController
     {
         try {
             $data = $this->getPayload($request);
-
-            $input = $this->clientDtoFactory->createUpdateInput(
-                $this->getOptionalString($data, 'name'),
-                $this->getOptionalString($data, 'legal_address'),
-                $this->getOptionalString($data, 'country_code'),
-                $this->getOptionalString($data, 'tax_id'),
-                $this->getOptionalString($data, 'tax_kpp'),
-                $this->getOptionalString($data, 'registration_number'),
-                $this->getOptionalArray($data, 'legal_details'),
-                $this->getFieldFlags($data)
-            );
-        } catch (InvalidArgumentException $exception) {
-            return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
-        }
-
-        $userId = $this->currentUserResolver->getUserId();
-        try {
-            $client = $this->clientManageService->updateForUser($userId, $id, $input);
+            $client = $this->clientManageService->updateForCurrentUser($id, $data);
         } catch (InvalidArgumentException $exception) {
             return new JsonResponse(['message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
@@ -155,7 +113,7 @@ final class ClientController
             return new JsonResponse(['message' => 'Client not found.'], Response::HTTP_NOT_FOUND);
         }
 
-        return new JsonResponse($this->normalizeClient($client));
+        return new JsonResponse($client);
     }
 
     #[OA\Delete(
@@ -174,32 +132,13 @@ final class ClientController
     #[Route('/{id}', name: 'app_clients_delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
-        $userId = $this->currentUserResolver->getUserId();
-        $deleted = $this->clientManageService->deleteForUser($userId, $id);
+        $deleted = $this->clientManageService->deleteForCurrentUser($id);
 
         if (true !== $deleted) {
             return new JsonResponse(['message' => 'Client not found.'], Response::HTTP_NOT_FOUND);
         }
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function normalizeClient(ClientDtoInterface $client): array
-    {
-        return [
-            'id' => $client->getId(),
-            'user_id' => $client->getUserId(),
-            'name' => $client->getName(),
-            'legal_address' => $client->getLegalAddress(),
-            'country_code' => $client->getCountryCode(),
-            'tax_id' => $client->getTaxId(),
-            'tax_kpp' => $client->getTaxKpp(),
-            'registration_number' => $client->getRegistrationNumber(),
-            'legal_details' => $client->getLegalDetails(),
-        ];
     }
 
     /**
@@ -218,75 +157,5 @@ final class ClientController
         }
 
         return $data;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function getOptionalString(array $data, string $key): ?string
-    {
-        if (!array_key_exists($key, $data)) {
-            return null;
-        }
-
-        $value = $data[$key];
-        if (null === $value) {
-            return null;
-        }
-
-        if (!is_string($value)) {
-            throw new InvalidArgumentException(sprintf('Field "%s" must be a string.', $key));
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, mixed>|null
-     */
-    private function getOptionalArray(array $data, string $key): ?array
-    {
-        if (!array_key_exists($key, $data)) {
-            return null;
-        }
-
-        $value = $data[$key];
-        if (null === $value) {
-            return null;
-        }
-
-        if (!is_array($value)) {
-            throw new InvalidArgumentException(sprintf('Field "%s" must be an array.', $key));
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     * @return array<string, bool>
-     */
-    private function getFieldFlags(array $data): array
-    {
-        $fields = [];
-        foreach (['name', 'legal_address', 'country_code', 'tax_id', 'tax_kpp', 'registration_number', 'legal_details'] as $field) {
-            if (array_key_exists($field, $data)) {
-                $fields[$this->toCamelCase($field)] = true;
-            }
-        }
-
-        return $fields;
-    }
-
-    private function toCamelCase(string $value): string
-    {
-        $parts = explode('_', $value);
-        $camel = array_shift($parts) ?: '';
-        foreach ($parts as $part) {
-            $camel .= ucfirst($part);
-        }
-
-        return $camel;
     }
 }
