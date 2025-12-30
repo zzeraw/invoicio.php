@@ -1,0 +1,119 @@
+<?php
+
+namespace App\AdminBundle\Tests\Security;
+
+use App\UserBundle\Enum\UserRoleEnum;
+use App\UserBundle\Enum\UserStatusEnum;
+use App\UserBundle\Repository\UserRepository;
+use PHPUnit\Framework\Assert;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpFoundation\Request;
+
+final class AuthTest extends KernelTestCase
+{
+    /**
+     * Проверяет, что доступ к админскому эндпоинту разрешен только для роли admin.
+     */
+    public function testAdminEndpointRequiresAdminRole(): void
+    {
+        $userRepository = $this->getUserRepository();
+
+        $adminEmail = 'admin.user@example.com';
+        $userEmail = 'regular.user@example.com';
+        $password = 'secret';
+
+        $userRepository->createUser(
+            $adminEmail,
+            password_hash($password, PASSWORD_DEFAULT),
+            UserRoleEnum::ADMIN->value,
+            UserStatusEnum::ACTIVE->value
+        );
+        $userRepository->createUser(
+            $userEmail,
+            password_hash($password, PASSWORD_DEFAULT),
+            UserRoleEnum::USER->value,
+            UserStatusEnum::ACTIVE->value
+        );
+
+        $adminToken = $this->login('/admin/v1/login', $adminEmail, $password);
+        $userToken = $this->login('/admin/v1/login', $userEmail, $password);
+
+        $adminResponse = $this->request('/admin/v1/secure', $adminToken);
+        Assert::assertSame(200, $adminResponse->getStatusCode());
+
+        $userResponse = $this->request('/admin/v1/secure', $userToken);
+        Assert::assertSame(403, $userResponse->getStatusCode());
+    }
+
+    /**
+     * Проверяет, что без JWT доступ к админскому эндпоинту запрещен.
+     */
+    public function testAdminEndpointRequiresJwt(): void
+    {
+        $response = $this->request('/admin/v1/secure', null);
+
+        Assert::assertSame(401, $response->getStatusCode());
+    }
+
+    protected function tearDown(): void
+    {
+        self::$kernel?->shutdown();
+        self::$kernel = null;
+        self::$booted = false;
+    }
+
+    protected static function getKernelClass(): string
+    {
+        return \App\Kernel::class;
+    }
+
+    private function getUserRepository(): UserRepository
+    {
+        $kernel = self::bootKernel();
+        $container = static::getContainer();
+        /** @var UserRepository $userRepository */
+        $userRepository = $container->get(UserRepository::class);
+
+        return $userRepository;
+    }
+
+    private function login(string $path, string $email, string $password): string
+    {
+        $response = $this->requestLogin($path, $email, $password);
+        Assert::assertSame(200, $response->getStatusCode());
+
+        $payload = json_decode((string) $response->getContent(), true);
+        if (!is_array($payload) || !isset($payload['token'])) {
+            Assert::fail('JWT token is missing in response.');
+        }
+
+        $token = (string) $payload['token'];
+        if ('' === $token) {
+            Assert::fail('JWT token is empty in response.');
+        }
+
+        return $token;
+    }
+
+    private function request(string $path, ?string $token): \Symfony\Component\HttpFoundation\Response
+    {
+        $kernel = self::bootKernel();
+
+        $headers = [];
+        if (null !== $token) {
+            $headers['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
+        }
+
+        return $kernel->handle(Request::create($path, 'GET', [], [], [], $headers));
+    }
+
+    private function requestLogin(string $path, string $email, string $password): \Symfony\Component\HttpFoundation\Response
+    {
+        $kernel = self::bootKernel();
+
+        $payload = json_encode(['email' => $email, 'password' => $password]);
+        $headers = ['CONTENT_TYPE' => 'application/json'];
+
+        return $kernel->handle(Request::create($path, 'POST', [], [], [], $headers, (string) $payload));
+    }
+}

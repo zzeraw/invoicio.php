@@ -1,0 +1,65 @@
+<?php
+
+namespace App\InvoiceBundle\Dto;
+
+final readonly class UpdateClientInputDto
+{
+    /**
+     * @param array<string, mixed>|null $legalDetails
+     * @param array<string, bool> $fields
+     */
+    public function __construct(
+        private ?string $name,
+        private ?string $legalAddress,
+        private ?string $countryCode,
+        private ?string $taxId,
+        private ?string $taxKpp,
+        private ?string $registrationNumber,
+        private ?array $legalDetails,
+        private array $fields
+    ) {
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function getLegalAddress(): ?string
+    {
+        return $this->legalAddress;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function getTaxId(): ?string
+    {
+        return $this->taxId;
+    }
+
+    public function getTaxKpp(): ?string
+    {
+        return $this->taxKpp;
+    }
+
+    public function getRegistrationNumber(): ?string
+    {
+        return $this->registrationNumber;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getLegalDetails(): ?array
+    {
+        return $this->legalDetails;
+    }
+
+    public function hasField(string $name): bool
+    {
+        return true === ($this->fields[$name] ?? false);
+    }
+}

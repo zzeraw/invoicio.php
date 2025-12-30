@@ -2,6 +2,7 @@
 
 namespace App\ApiBundle\Security;
 
+use LogicException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final class ApiTokenUser implements UserInterface
@@ -19,12 +20,13 @@ final class ApiTokenUser implements UserInterface
     public function getUserIdentifier(): string
     {
         if ('' === $this->identifier) {
-            throw new \LogicException('API token identifier is not set.');
+            throw new LogicException('API token identifier is not set.');
         }
 
         return $this->identifier;
     }
 
+    #[\Deprecated('No sensitive data stored; eraseCredentials is intentionally empty.')]
     public function eraseCredentials(): void
     {
     }

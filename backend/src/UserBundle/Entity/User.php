@@ -3,6 +3,7 @@
 namespace App\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -65,7 +66,7 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         if ('' === $this->email) {
-            throw new \LogicException('User email is not set.');
+            throw new LogicException('User email is not set.');
         }
 
         return $this->email;
@@ -116,6 +117,7 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->passwordHash;
     }
 
+    #[\Deprecated('No sensitive data stored; eraseCredentials is intentionally empty.')]
     public function eraseCredentials(): void
     {
     }
