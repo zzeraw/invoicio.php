@@ -1,8 +1,16 @@
 parameters:
     level: max
     paths:
+        - src/AdminBundle
         - src/AppBundle
+        - src/ApiBundle
         - src/InvoiceBundle
         - src/UserBundle
     excludePaths:
         - src/*Bundle/Tests
+
+services:
+    -
+        class: App\PhpStan\Rules\NoPublicMethodReturnsEntityRule
+        tags:
+            - phpstan.rules.rule
