@@ -6,8 +6,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final class ApiTokenUser implements UserInterface
 {
-    public function __construct(private readonly string $identifier)
-    {
+    public function __construct(
+        private readonly string $identifier
+    ) {
     }
 
     public function getRoles(): array
@@ -17,6 +18,10 @@ final class ApiTokenUser implements UserInterface
 
     public function getUserIdentifier(): string
     {
+        if ('' === $this->identifier) {
+            throw new \LogicException('API token identifier is not set.');
+        }
+
         return $this->identifier;
     }
 

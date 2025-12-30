@@ -7,8 +7,9 @@ use Nelmio\Alice\Loader\NativeLoader;
 
 final class AliceFixtureLoader
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager
+    ) {
     }
 
     /**
