@@ -4,7 +4,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^2.18.2",
@@ -25,8 +25,11 @@
         "codeception/codeception": "^5.2",
         "codeception/module-asserts": "^3.0",
         "doctrine/data-fixtures": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.64",
         "nelmio/alice": "^3.14",
+        "phpstan/phpstan": "^1.12",
         "phpunit/phpunit": "^11.5",
+        "squizlabs/php_codesniffer": "^3.10",
         "symfony/phpunit-bridge": "^7.4"
     },
     "config": {
@@ -64,6 +67,9 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "test": "vendor/bin/codecept run",
+        "phpstan": "vendor/bin/phpstan analyse",
+        "cs-fix": "vendor/bin/php-cs-fixer fix",
+        "phpcs": "vendor/bin/phpcs",
         "post-install-cmd": [
             "@auto-scripts"
         ],

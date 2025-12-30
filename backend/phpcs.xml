@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Project PER-CS">
+    <description>Project coding standard (PER-CS).</description>
+
+    <rule ref="PER-CS"/>
+
+    <file>src</file>
+
+    <exclude-pattern>*/Tests/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+</ruleset>

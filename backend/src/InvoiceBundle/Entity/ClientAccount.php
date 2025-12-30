@@ -33,6 +33,9 @@ final class ClientAccount
     #[ORM\Column(name: 'currency_code', length: 3, nullable: true)]
     private ?string $currencyCode = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $details = null;
 
@@ -90,11 +93,17 @@ final class ClientAccount
         $this->currencyCode = $currencyCode;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getDetails(): ?array
     {
         return $this->details;
     }
 
+    /**
+     * @param array<string, mixed>|null $details
+     */
     public function setDetails(?array $details): void
     {
         $this->details = $details;

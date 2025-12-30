@@ -20,9 +20,15 @@ final class UserManageServiceTest extends KernelTestCase
         self::bootKernel();
 
         $container = static::getContainer();
-        $this->service = $container->get(UserManageService::class);
-        $this->userRepository = $container->get(UserRepository::class);
+        /** @var UserManageService $service */
+        $service = $container->get(UserManageService::class);
+        /** @var UserRepository $userRepository */
+        $userRepository = $container->get(UserRepository::class);
+        /** @var EntityManagerInterface $entityManager */
         $entityManager = $container->get(EntityManagerInterface::class);
+
+        $this->service = $service;
+        $this->userRepository = $userRepository;
         $this->fixtures = new AliceFixtureLoader($entityManager);
     }
 

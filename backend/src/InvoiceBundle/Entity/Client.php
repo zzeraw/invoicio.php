@@ -38,6 +38,9 @@ final class Client
     #[ORM\Column(name: 'registration_number', length: 64, nullable: true)]
     private ?string $registrationNumber = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     #[ORM\Column(name: 'legal_details', type: 'json', nullable: true)]
     private ?array $legalDetails = null;
 
@@ -136,11 +139,17 @@ final class Client
         $this->registrationNumber = $registrationNumber;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getLegalDetails(): ?array
     {
         return $this->legalDetails;
     }
 
+    /**
+     * @param array<string, mixed>|null $legalDetails
+     */
     public function setLegalDetails(?array $legalDetails): void
     {
         $this->legalDetails = $legalDetails;

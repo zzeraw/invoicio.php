@@ -40,10 +40,10 @@ final class CreateUserCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $createUserInput = new CreateUserInputDto(
-            (string) $input->getArgument('email'),
-            (string) $input->getArgument('password'),
-            (string) $input->getOption('role'),
-            (string) $input->getOption('status')
+            $this->getStringArgument($input, 'email'),
+            $this->getStringArgument($input, 'password'),
+            $this->getStringOption($input, 'role'),
+            $this->getStringOption($input, 'status')
         );
 
         try {
@@ -56,5 +56,25 @@ final class CreateUserCommand extends Command
         $io->success(sprintf('User created (id: %d).', $userId));
 
         return Command::SUCCESS;
+    }
+
+    private function getStringArgument(InputInterface $input, string $name): string
+    {
+        $value = $input->getArgument($name);
+        if (!is_string($value)) {
+            throw new InvalidArgumentException(sprintf('Argument "%s" must be a string.', $name));
+        }
+
+        return $value;
+    }
+
+    private function getStringOption(InputInterface $input, string $name): string
+    {
+        $value = $input->getOption($name);
+        if (!is_string($value)) {
+            throw new InvalidArgumentException(sprintf('Option "%s" must be a string.', $name));
+        }
+
+        return $value;
     }
 }

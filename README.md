@@ -72,3 +72,15 @@ docker compose exec php ./vendor/bin/codecept run
 
 docker compose up -d --wait postgres_test
 cd backend && ./vendor/bin/codecept run
+
+
+
+
+
+
+
+
+docker compose exec php ./vendor/bin/codecept run
+docker compose exec php ./vendor/bin/phpstan analyse
+docker compose exec php ./vendor/bin/php-cs-fixer fix
+docker compose exec php ./vendor/bin/phpcs

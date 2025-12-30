@@ -5,7 +5,6 @@ namespace App\UserBundle\Service;
 use App\UserBundle\Dto\CreateUserInputDto;
 use App\UserBundle\Repository\UserRepository;
 use InvalidArgumentException;
-use RuntimeException;
 
 final class UserManageService
 {
@@ -43,10 +42,6 @@ final class UserManageService
         }
 
         $passwordHash = password_hash($input->getPassword(), PASSWORD_DEFAULT);
-        if (false === $passwordHash) {
-            throw new RuntimeException('Failed to hash password.');
-        }
-
         return $this->userRepository->createUser($email, $passwordHash, $input->getRole(), $input->getStatus());
     }
 }
