@@ -2,7 +2,6 @@
 
 namespace App\InvoiceBundle\Entity;
 
-use App\Shared\Entity\Traits\TimestampsTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -11,8 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 final class ClientAccount
 {
-    use TimestampsTrait;
-
     public const TYPE_BANK = 'bank';
     public const TYPE_CARD = 'card';
     public const TYPE_CRYPTO = 'crypto';
@@ -41,6 +38,12 @@ final class ClientAccount
 
     #[ORM\Column(name: 'is_default', type: 'boolean')]
     private bool $isDefault = false;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $updatedAt;
 
     public function getId(): ?int
     {
@@ -105,5 +108,29 @@ final class ClientAccount
     public function setIsDefault(bool $isDefault): void
     {
         $this->isDefault = $isDefault;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $now = new \DateTimeImmutable();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 }

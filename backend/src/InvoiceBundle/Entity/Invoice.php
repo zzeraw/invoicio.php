@@ -2,8 +2,6 @@
 
 namespace App\InvoiceBundle\Entity;
 
-use App\Shared\Entity\Traits\SoftDeleteTrait;
-use App\Shared\Entity\Traits\TimestampsTrait;
 use App\UserBundle\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,9 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 final class Invoice
 {
-    use SoftDeleteTrait;
-    use TimestampsTrait;
-
     public const VAT_WITH = 'with_vat';
     public const VAT_WITHOUT = 'without_vat';
 
@@ -63,6 +58,15 @@ final class Invoice
      */
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceItem::class, cascade: ['persist'], orphanRemoval: true)]
     private Collection $items;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $updatedAt;
 
     public function __construct()
     {
@@ -160,5 +164,39 @@ final class Invoice
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $now = new \DateTimeImmutable();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 }

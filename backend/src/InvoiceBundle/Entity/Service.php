@@ -2,8 +2,6 @@
 
 namespace App\InvoiceBundle\Entity;
 
-use App\Shared\Entity\Traits\SoftDeleteTrait;
-use App\Shared\Entity\Traits\TimestampsTrait;
 use App\UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,9 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 final class Service
 {
-    use SoftDeleteTrait;
-    use TimestampsTrait;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -30,6 +25,15 @@ final class Service
 
     #[ORM\Column(name: 'name_en', length: 255, nullable: true)]
     private ?string $nameEn = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $updatedAt;
 
     public function getId(): ?int
     {
@@ -64,5 +68,39 @@ final class Service
     public function setNameEn(?string $nameEn): void
     {
         $this->nameEn = $nameEn;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $now = new \DateTimeImmutable();
+        $this->createdAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): void
+    {
+        $this->deletedAt = $deletedAt;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 }
