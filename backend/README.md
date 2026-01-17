@@ -5,6 +5,9 @@
 ## Базовый запуск
 
 ```bash
+docker compose build
+docker compose up -d
+
 docker compose --env-file .env up -d --force-recreate php
 ```
 
